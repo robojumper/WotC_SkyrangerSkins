@@ -16,10 +16,33 @@ class X2DownloadableContentInfo_WotC_SkyrangerSkins extends X2DownloadableConten
 /// create without the content installed. Subsequent saves will record that the content was installed.
 /// </summary>
 static event OnLoadedSavedGame()
-{}
+{
+	class'XComGameState_SkyrangerOptions'.static.GetOrCreate();
+}
 
 /// <summary>
 /// Called when the player starts a new campaign while this DLC / Mod is installed
 /// </summary>
 static event InstallNewCampaign(XComGameState StartState)
-{}
+{
+	class'XComGameState_SkyrangerOptions'.static.GetOrCreate(StartState);
+}
+
+
+// Helper console command that writes the current camera settings to the log file
+exec function LogCameraTPOV()
+{
+	local TPOV CamTPOV;
+	CamTPOV = class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController().PlayerCamera.CameraCache.POV;
+	`log(`showvar(CamTPOV.Location.X));
+	`log(`showvar(CamTPOV.Location.Y));
+	`log(`showvar(CamTPOV.Location.Z));
+	`log(`showvar(CamTPOV.Rotation.Pitch));
+	`log(`showvar(CamTPOV.Rotation.Roll));
+	`log(`showvar(CamTPOV.Rotation.Yaw));
+}
+
+exec function DoRemoteEvent(name EventName)
+{
+	`XCOMGRI.DoRemoteEvent(EventName);
+}

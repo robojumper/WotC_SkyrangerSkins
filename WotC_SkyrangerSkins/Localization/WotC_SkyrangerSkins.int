@@ -1,0 +1,11 @@
+[Helpers_SkyrangerSkins]
+strCustomizeSkyranger="Customize Skyranger"
+
+[UICustomizeSkyranger]
+strTitle="CUSTOMIZE SKYRANGER"
+
+[DefaultSkin X2SkyrangerMaterialsTemplate]
+DisplayName="Default"
+
+[Codex X2SkyrangerMaterialsTemplate]
+DisplayName="Codex"

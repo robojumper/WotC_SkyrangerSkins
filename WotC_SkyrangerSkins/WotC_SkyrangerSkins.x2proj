@@ -11,18 +11,61 @@
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Localization\" />
+    <Folder Include="Content" />
     <Folder Include="Src\" />
     <Folder Include="Src\WotC_SkyrangerSkins\" />
     <Folder Include="Src\WotC_SkyrangerSkins\Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\XComSkyrangerSkins.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\CIN_SkyrangerCustomization.umap">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\WotC_SkyrangerSkins.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="ReadMe.txt" />
     <Content Include="ModPreview.jpg" />
     <Content Include="Config\XComEditor.ini" />
     <Content Include="Config\XComEngine.ini" />
     <Content Include="Config\XComGame.ini" />
     <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\Helpers_SkyrangerSkins.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UICustomizeSkyranger.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UICustomizeSkyrangerItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UISL_AvengerHUD_SkyrangerSkins.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UISL_TacticalHUD_SkyrangerSkins.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\WotC_SkyrangerSkins\Classes\X2DownloadableContentInfo_WotC_SkyrangerSkins.uc" />
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomization.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomizationTemplate.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomizationTemplateManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomization_DefaultCustomizationOptions.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerMaterialsTemplate.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\XComGameState_SkyrangerOptions.uc">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
 </Project>

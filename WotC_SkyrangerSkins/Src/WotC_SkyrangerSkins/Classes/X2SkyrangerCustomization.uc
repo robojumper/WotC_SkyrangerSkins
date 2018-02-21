@@ -1,0 +1,1 @@
+class X2SkyrangerCustomization extends X2DataSet;
