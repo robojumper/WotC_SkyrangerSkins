@@ -102,6 +102,17 @@ simulated function SubmitCustomizationState()
 	}
 }
 
+simulated function DiscardCustomizationState()
+{
+	if (PendingGameState != none)
+	{
+		`XCOMHISTORY.CleanupPendingGameState(PendingGameState);
+		PendingGameState = none;
+		OptionsState = none;
+		CreateCustomizationState();
+	}
+}
+
 
 simulated function UpdateEquippedList()
 {
@@ -382,6 +393,7 @@ simulated function OnCancel()
 	}	
 	else
 	{
+		DiscardCustomizationState();
 		ChangeActiveList(EquippedList);
 		OnSelectionChanged(EquippedList, EquippedList.SelectedIndex);
 	}

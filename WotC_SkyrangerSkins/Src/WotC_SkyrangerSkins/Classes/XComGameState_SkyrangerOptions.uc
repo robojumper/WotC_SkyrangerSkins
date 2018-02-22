@@ -34,11 +34,12 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 	}
 }
 
-// Ugly, but works
+// Ugly and slow, but works
 static function ApplyToAll()
 {
 	local WorldInfo WI;
 	local SkeletalMeshActor S;
+	local StaticMeshActor A;
 	local array<MeshComponent> Exts, Ints;
 	WI = class'WorldInfo'.static.GetWorldInfo();
 	foreach WI.DynamicActors(class'SkeletalMeshActor', S)
@@ -65,18 +66,26 @@ static function ApplyToAll()
 				Ints.AddItem(S.SkeletalMeshComponent);
 			}
 		}
-		else if (InStr(PathName(S), "CIN_Loading_Interior", false, true) != INDEX_NONE)
+	}
+// TODO: Do we actually want this? There's also a door mesh involved here, so it doesn't work particularly great
+/*
+	foreach WI.AllActors(class'StaticMeshActor', A)
+	{
+		// This doesn't work this way for some reason
+		//if (InStr(PathName(A), "CIN_Loading_Interior", false, true) != INDEX_NONE)
+		if (InStr(PathName(A), "Level_", false, true) != INDEX_NONE)
 		{
-			if (S.Name == 'SkeletalMeshActor_3')
+			if (A.Name == 'StaticMeshActor_3')
 			{
-				Exts.AddItem(S.SkeletalMeshComponent);
+				Exts.AddItem(A.StaticMeshComponent);
 			}
-			else if (S.Name == 'SkeletalMeshActor_2')
+			else if (A.Name == 'StaticMeshActor_2')
 			{
-				Ints.AddItem(S.SkeletalMeshComponent);
+				Ints.AddItem(A.StaticMeshComponent);
 			}
 		}
 	}
+*/
 	GetOrCreate().ApplyToSkyrangers(Exts, Ints);
 }
 

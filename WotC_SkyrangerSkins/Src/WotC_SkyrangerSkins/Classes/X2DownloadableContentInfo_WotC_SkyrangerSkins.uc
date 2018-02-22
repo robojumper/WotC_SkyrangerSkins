@@ -46,3 +46,8 @@ exec function DoRemoteEvent(name EventName)
 {
 	`XCOMGRI.DoRemoteEvent(EventName);
 }
+
+exec function ApplyToAll()
+{
+	class'XComGameState_SkyrangerOptions'.static.ApplyToAll();
+}
