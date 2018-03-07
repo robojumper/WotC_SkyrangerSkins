@@ -41,5 +41,5 @@ simulated function OnButtonClicked(UIButton button)
 
 function MsgCallback(optional StateObjectReference Facility)
 {
-	`HQPRES.ScreenStack.Push( `HQPRES.Spawn(class'UICustomizeSkyranger', `HQPRES), `HQPRES.Get3DMovie());
+	`HQPRES.ScreenStack.Push( `HQPRES.Spawn(class'UICustomizeSkyranger_Main', `HQPRES), `HQPRES.Get3DMovie());
 }

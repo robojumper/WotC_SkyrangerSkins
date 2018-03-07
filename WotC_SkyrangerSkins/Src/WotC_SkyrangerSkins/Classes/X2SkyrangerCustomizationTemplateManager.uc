@@ -16,23 +16,17 @@ function X2SkyrangerCustomizationTemplate FindSkyrangerCustomizationTemplate(nam
 }
 
 
-function array<X2SkyrangerCustomizationTemplate> GetAllTemplatesOfClass(class<X2SkyrangerCustomizationTemplate> TemplateClass, optional int UseTemplateGameArea=-1)
+function GetFilteredTemplates(name PartType, delegate<X2SkyrangerCustomizationFilter.FilterCallback> CallbackFn, out array<X2SkyrangerCustomizationTemplate> arrTemplates)
 {
-	local array<X2SkyrangerCustomizationTemplate> arrTemplates;
 	local X2DataTemplate Template;
 
 	foreach IterateTemplates(Template, none)
 	{
-		if ((UseTemplateGameArea > -1) && !Template.IsTemplateAvailableToAllAreas(UseTemplateGameArea))
-			continue;
-
-		if (ClassIsChildOf(Template.Class, TemplateClass))
+		if (X2SkyrangerCustomizationTemplate(Template).PartType == PartType && (CallbackFn == none || CallbackFn(X2SkyrangerCustomizationTemplate(Template))))
 		{
 			arrTemplates.AddItem(X2SkyrangerCustomizationTemplate(Template));
 		}
 	}
-
-	return arrTemplates;
 }
 
 DefaultProperties

@@ -1,11 +1,18 @@
 [Helpers_SkyrangerSkins]
 strCustomizeSkyranger="Customize Skyranger"
 
-[UICustomizeSkyranger]
-strTitle="CUSTOMIZE SKYRANGER"
-
 [DefaultSkin X2SkyrangerMaterialsTemplate]
 DisplayName="Default"
 
 [Codex X2SkyrangerMaterialsTemplate]
 DisplayName="Codex"
+
+
+[Decal_Default X2SkyrangerCustomizationTemplate]
+DisplayName="None"
+
+[Decal_Skulls X2SkyrangerCustomizationTemplate]
+DisplayName="Sectoid Skulls"
+
+[Decal_Flames X2SkyrangerCustomizationTemplate]
+DisplayName="Flames"

@@ -1,349 +1,130 @@
-// As much as I dislike Matinee, it's a good way to handle the skyranger here
-class UICustomizeSkyranger extends UIScreen;
+// Big ol' copy of UICustomize, to make it work with the skyranger
+class UICustomizeSkyranger extends UIScreen abstract;
 
-enum ESkyrangerCustomizationTrait
-{
-	eSCT_Materials,
-};
+var UIBGBox ListBG;
+var UIList List;
+var UIX2PanelHeader Header;
 
-var UIList ActiveList;
-
-var UIPanel EquippedListContainer;
-var UIList EquippedList;
-
-var UIPanel LockerListContainer;
-var UIList LockerList;
-
-
-var SkeletalMeshActor PreviewSkyrangerHull;
-var SkeletalMeshActor PreviewSkyrangerInterior;
-
-var XComGameState PendingGameState;
-var XComGameState_SkyrangerOptions OptionsState;
-
-// Simple state tracking so we don't end up triggering events multiple times (or skip them)
-var enum ESkyrangerCustomizeScreenState
-{
-	eSCSS_Starting,
-	eSCSS_Running,
-	eSCSS_Ending,
-} ScreenState;
-
-var localized string strTitle;
+var protected ISkyrangerCustomizeSelector Selector;
+var protected XComSkyrangerCustomization Customization;
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
-	local StateObjectReference EmptyRef;
 	super.InitScreen(InitController, InitMovie, InitName);
-	Spawn(class'UISoldierHeader', self).InitSoldierHeader(EmptyRef, none).Hide();
 
-	InitKismet();
-	class'XComGameState_SkyrangerOptions'.static.GetOrCreate();
-	CreateCustomizationState();
-
-	MC.FunctionString("setLeftPanelTitle", strTitle);
-
-	EquippedListContainer = Spawn(class'UIPanel', self);
-	EquippedListContainer.bAnimateOnInit = false;
-	EquippedListContainer.InitPanel('leftPanel');
-	EquippedList = class'UIArmory_Loadout'.static.CreateList(EquippedListContainer);
-	EquippedList.OnSelectionChanged = OnSelectionChanged;
-	EquippedList.OnItemClicked = OnItemClicked;
-	EquippedList.OnItemDoubleClicked = OnItemClicked;
-
-	LockerListContainer = Spawn(class'UIPanel', self);
-	LockerListContainer.bAnimateOnInit = false;
-	LockerListContainer.InitPanel('rightPanel');
-	LockerList = class'UIArmory_Loadout'.static.CreateList(LockerListContainer);
-	LockerList.OnSelectionChanged = OnSelectionChanged;
-	LockerList.OnItemClicked = OnItemClicked;
-	LockerList.OnItemDoubleClicked = OnItemClicked;
+	ListBG = Spawn(class'UIBGBox', self);
+	ListBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
+	ListBG.InitBG('', 100, 100, 585, 800);
+	List = Spawn(class'UIList', self);
+	List.InitList('', 123, 150, 538, 740);
+	List.ItemPadding = 5;
+	List.bStickyHighlight = false;
+	List.width = 538;
+	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 
 	UpdateNavHelp();
-	PopulateData();
-
+	UpdateData();
 }
 
-simulated function PopulateData()
+function ResetMechaListItems()
 {
-	UpdateEquippedList();
-	UpdateLockerList();
-	ChangeActiveList(EquippedList, true);
-}
-
-
-simulated function OnInit()
-{
-	super.OnInit();
-	`XCOMGRI.DoRemoteEvent('CIN_StartSkyrangerCustomization');
-	ScreenState = eSCSS_Starting;
-	`log("Set State to starting");
-}
-
-
-simulated function CreateCustomizationState()
-{
-	if (PendingGameState == none)
-	{
-		PendingGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Create Skyranger Customization State");
-		OptionsState = class'XComGameState_SkyrangerOptions'.static.GetOrCreate(PendingGameState);
-		OptionsState = XComGameState_SkyrangerOptions(PendingGameState.ModifyStateObject(class'XComGameState_SkyrangerOptions', OptionsState.ObjectID));
-	}
-}
-
-simulated function SubmitCustomizationState()
-{
-	if (PendingGameState != none)
-	{
-		`GAMERULES.SubmitGameState(PendingGameState);
-		PendingGameState = none;
-		OptionsState = none;
-		CreateCustomizationState();
-	}
-}
-
-simulated function DiscardCustomizationState()
-{
-	if (PendingGameState != none)
-	{
-		`XCOMHISTORY.CleanupPendingGameState(PendingGameState);
-		PendingGameState = none;
-		OptionsState = none;
-		CreateCustomizationState();
-	}
-}
-
-
-simulated function UpdateEquippedList()
-{
-	local XComGameState_SkyrangerOptions HistoryOptions;
-	local UICustomizeSkyrangerItem Item;
-	local int prevIndex;
-	local X2SkyrangerCustomizationTemplateManager Man;
-	local X2SkyrangerCustomizationTemplate Temp;
-
-	Man = class'X2SkyrangerCustomizationTemplateManager'.static.GetSkyrangerCustomizationTemplateManager();
-
-	HistoryOptions = XComGameState_SkyrangerOptions(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_SkyrangerOptions'));
-	
-	prevIndex = EquippedList.SelectedIndex;
-	EquippedList.ClearItems();
-
-	// Materials
-	Item = UICustomizeSkyrangerItem(EquippedList.CreateItem(class'UICustomizeSkyrangerItem'));
-	Temp = Man.FindSkyrangerCustomizationTemplate(HistoryOptions.MaterialsName);
-	Item.InitCustomizeItem(Temp, eSCT_Materials);
-
-	EquippedList.SetSelectedIndex(prevIndex < EquippedList.ItemCount ? prevIndex : 0);
-	// Force item into view
-	EquippedList.NavigatorSelectionChanged(EquippedList.SelectedIndex);
-
-}
-
-simulated function UpdateLockerList()
-{
-	local array<X2SkyrangerCustomizationTemplate> Templates;
+	local UIMechaListItem CustomizeItem;
 	local int i;
-	local ESkyrangerCustomizationTrait Trait;
 
-	Trait = UICustomizeSkyrangerItem(EquippedList.GetSelectedItem()).Trait;
-	Templates = GetTemplatesForCategory(Trait);
-	LockerList.ClearItems();
-
-	for (i = 0; i < Templates.Length; i++)
+	for (i = 0; i < List.ItemCount; i++)
 	{
-		UICustomizeSkyrangerItem(LockerList.CreateItem(class'UICustomizeSkyrangerItem')).InitCustomizeItem(Templates[i], Trait);
+		CustomizeItem = GetListItem(i++);
+		CustomizeItem.SetDisabled(false);
+		CustomizeItem.OnLoseFocus();
+		CustomizeItem.Hide();
+		CustomizeItem.BG.RemoveTooltip();
+		CustomizeItem.DisableNavigation();
+	}
+	List.SetSelectedIndex(-1);
+}
+
+simulated function SetTitle(string str)
+{
+	// TODO
+}
+
+simulated function UpdateData()
+{
+	if( Selector != none )
+	{
+		CloseSelector();
 	}
 
-	// If we have an invalid SelectedIndex, just try and select the first thing that we can.
-	// Otherwise let's make sure the Navigator is selecting the right thing.
-	if(LockerList.SelectedIndex < 0 || LockerList.SelectedIndex >= LockerList.ItemCount)
+}
+
+simulated function UIMechaListItem GetListItem(int ItemIndex, optional bool bDisableItem, optional string DisabledReason)
+{
+	local UIMechaListItem CustomizeItem;
+	local UIPanel Item;
+
+	if(List.ItemCount <= ItemIndex)
 	{
-		LockerList.Navigator.SelectFirstAvailable();
+		CustomizeItem = Spawn(class'UIMechaListItem', List.ItemContainer);
+		CustomizeItem.bAnimateOnInit = false;
+		CustomizeItem.InitListItem();
 	}
 	else
 	{
-		LockerList.Navigator.SetSelected(LockerList.GetSelectedItem());
+		Item = List.GetItem(ItemIndex);
+		CustomizeItem = UIMechaListItem(Item);
 	}
-	OnSelectionChanged(ActiveList, ActiveList.SelectedIndex);
 
+	CustomizeItem.SetDisabled(bDisableItem, DisabledReason);
+
+	return CustomizeItem;
 }
 
-
-simulated function array<X2SkyrangerCustomizationTemplate> GetTemplatesForCategory(ESkyrangerCustomizationTrait Cat)
+simulated function ISkyrangerCustomizeSelector GetSelector(class<Actor> SelectorClass, optional array<string> Options,
+													optional delegate<Helpers_SkyrangerSkins.SelectorOnPreviewDelegate> PreviewDelegate,
+													optional delegate<Helpers_SkyrangerSkins.SelectorOnSetDelegate> SetDelegate,
+													optional int Selection = 0)
 {
-	switch (Cat)
+	if(Selector == none)
 	{
-		case eSCT_Materials:
-			return class'X2SkyrangerCustomizationTemplateManager'.static.GetSkyrangerCustomizationTemplateManager().GetAllTemplatesOfClass(class'X2SkyrangerMaterialsTemplate');
+		List.Hide();
+		Selector = ISkyrangerCustomizeSelector(Spawn(SelectorClass, self));
+
+		Selector.InitSelector(, 100, 125, 584, 775, Options, PreviewDelegate, SetDelegate, Selection);
+		UIPanel(Selector).SetSelectedNavigation();
+		ListBG.ProcessMouseEvents(Selector.OnChildMouseEvent);
 	}
+	return Selector;
 }
 
-
-simulated function OnSelectionChanged(UIList ContainerList, int ItemIndex)
+simulated function HideListItems()
 {
-	if (ContainerList == LockerList && LockerList == ActiveList)
+	local int i;
+	for(i = 0; i < List.ItemCount; ++i)
 	{
-		Apply(UICustomizeSkyrangerItem(LockerList.GetSelectedItem()));
+		List.GetItem(i).Hide();
 	}
 }
 
-
-simulated function Apply(UICustomizeSkyrangerItem Item)
+simulated function ShowListItems()
 {
-	local array<MeshComponent> A, B;
-	switch (Item.Trait)
+	local int i;
+	for(i = 0; i < List.ItemCount; ++i)
 	{
-		case eSCT_Materials:
-			OptionsState.MaterialsName = UICustomizeSkyrangerItem(LockerList.GetSelectedItem()).Template.DataName;
-			break;
+		List.GetItem(i).Show();
 	}
-	A.AddItem(PreviewSkyrangerHull.SkeletalMeshComponent);
-	B.AddItem(PreviewSkyrangerInterior.SkeletalMeshComponent);
-	OptionsState.ApplyToSkyrangers(A, B);
 }
 
 
-simulated function OnItemClicked(UIList ContainerList, int ItemIndex)
+simulated function OnReceiveFocus()
 {
-	if(ContainerList != ActiveList) return;
+	super.OnReceiveFocus();
 
-	if(ContainerList == EquippedList)
-	{
-		UpdateLockerList();
-		ChangeActiveList(LockerList);
-	}
-	else
-	{
-		Apply(UICustomizeSkyrangerItem(LockerList.GetSelectedItem()));
-		SubmitCustomizationState();
-		ChangeActiveList(EquippedList);
-		UpdateEquippedList();
-		
-		if (EquippedList.SelectedIndex < 0)
-		{
-			EquippedList.SetSelectedIndex(0);
-		}
-	}
+	UpdateNavHelp();
+	UpdateData();
+
+	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 }
 
-
-simulated function ChangeActiveList(UIList kActiveList, optional bool bSkipAnimation)
-{
-	local UICustomizeSkyrangerItem LoadoutItem;
-
-	ActiveList = kActiveList;
-
-	LoadoutItem =  UICustomizeSkyrangerItem(EquippedList.GetSelectedItem());
-	
-	if(kActiveList == EquippedList)
-	{
-		if(!bSkipAnimation)
-			MC.FunctionVoid("closeList");
-
-		// disable list item selection on LockerList, enable it on EquippedList
-		LockerListContainer.DisableMouseHit();
-		EquippedListContainer.EnableMouseHit();
-
-		Navigator.RemoveControl(LockerListContainer);
-		Navigator.AddControl(EquippedListContainer);
-		EquippedList.EnableNavigation();
-		LockerList.DisableNavigation();
-		Navigator.SetSelected(EquippedListContainer);
-		if (EquippedList.SelectedIndex < 0)
-		{
-			EquippedList.SetSelectedIndex(0);
-		}
-		else
-		{
-			EquippedList.GetSelectedItem().OnReceiveFocus();
-		}
-	}
-	else
-	{
-		if(!bSkipAnimation)
-			MC.FunctionVoid("openList");
-
-		// disable list item selection on LockerList, enable it on EquippedList
-		LockerListContainer.EnableMouseHit();
-		EquippedListContainer.DisableMouseHit();
-
-		LockerList.SetSelectedIndex(0, true);
-		Navigator.RemoveControl(EquippedListContainer);
-		Navigator.AddControl(LockerListContainer);
-		EquippedList.DisableNavigation();
-		LockerList.EnableNavigation();
-		Navigator.SetSelected(LockerListContainer);
-		LockerList.Navigator.SelectFirstAvailable();
-	}
-}
-
-
-
-
-
-
-event OnRemoteEvent(name RemoteEventName)
-{
-	super.OnRemoteEvent(RemoteEventName);
-	if (RemoteEventName == 'CIN_SkyrangerFadedOut')
-	{
-		`log("Faded out triggered");
-		OnFadeOutTriggered();
-	}
-}
-
-function OnFadeOutTriggered()
-{
-	if (ScreenState == eSCSS_Starting)
-	{
-		`GAME.GetGeoscape().m_kBase.SetAvengerCapVisibility(true);
-		`GAME.GetGeoscape().m_kBase.SetPostMissionSequenceVisibility(true);
-		SetLightsActive(false);
-		class'UIUtilities'.static.DisplayUI3D('3DUIBP_SkyrangerCustomization', '3DUIBP_SkyrangerCustomization', 0);
-		ScreenState = eSCSS_Running;
-		`log("Set State to Running");
-	}
-	else if (ScreenState == eSCSS_Ending)
-	{
-		Cleanup();
-		super.CloseScreen();
-	}
-}
-
-// Delay close screen
-simulated function CloseScreen()
-{
-	if (ScreenState == eSCSS_Running)
-	{
-		`XCOMGRI.DoRemoteEvent('CIN_EndSkyrangerCustomization');
-		ScreenState = eSCSS_Ending;
-		`log("Set State to ending");
-	}
-}
-
-simulated function OnRemoved()
-{
-	super.OnRemoved();
-	// Failsafe: If we've been removed, but haven't cleaned up, do it now
-	if (ScreenState == eSCSS_Running)
-	{
-		Cleanup();
-		ScreenState = eSCSS_Ending;
-	}
-}
-
-simulated function Cleanup()
-{
-	SetLightsActive(true);
-	`GAME.GetGeoscape().m_kBase.SetAvengerCapVisibility(false);
-	`GAME.GetGeoscape().m_kBase.SetPostMissionSequenceVisibility(false);
-	if (PendingGameState != none)
-	{
-		`XCOMHISTORY.CleanupPendingGameState(PendingGameState);
-	}
-	class'XComGameState_SkyrangerOptions'.static.ApplyToAll();
-}
 
 // Input
 
@@ -353,6 +134,10 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 
 	if( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
 		return false;
+
+	if (Selector != none && Selector.OnUnrealCommand(cmd, arg))
+		return true;
+
 
 	bHandled = true;
 
@@ -376,28 +161,38 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
 
-simulated function OnAccept()
-{
-	if (ActiveList.SelectedIndex == -1)
-		return;
-
-	OnItemClicked(ActiveList, ActiveList.SelectedIndex);
-}
-
-
+simulated function OnAccept();
 simulated function OnCancel()
 {
-	if(ActiveList == EquippedList)
+	CloseScreen();
+}
+
+simulated function CloseScreen()
+{	
+	if (!CloseSelector(true))
 	{
-		CloseScreen();
-	}	
-	else
-	{
-		DiscardCustomizationState();
-		ChangeActiveList(EquippedList);
-		OnSelectionChanged(EquippedList, EquippedList.SelectedIndex);
+		super.CloseScreen();
 	}
 }
+
+simulated function bool CloseSelector(optional bool bCancelSelection)
+{
+	if (Selector != none)
+	{
+		if(bCancelSelection)
+			Selector.CancelSelection();
+
+		UIPanel(Selector).Remove();
+		Selector = none;
+
+		ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
+		List.Show();
+		List.SetSelectedNavigation();
+		return true;
+	}
+	return false;
+}
+
 
 simulated function UpdateNavHelp()
 {
@@ -413,78 +208,8 @@ simulated function UpdateNavHelp()
 
 }
 
-
-function InitKismet()
-{
-	WorldInfo.RemoteEventListeners.AddItem(self);
-	SetSkyrangerVars();
-}
-
-// Make our Kismet aware of the Skyranger
-function SetSkyrangerVars()
-{
-	local WorldInfo WI;
-	local SkeletalMeshActor S;
-	WI = class'WorldInfo'.static.GetWorldInfo();
-	WI.MyKismetVariableMgr.RebuildVariableMap();
-	foreach WI.DynamicActors(class'SkeletalMeshActor', S)
-	{
-		if (InStr(PathName(S), "CIN_PostMission1", false, true) != INDEX_NONE)
-		{
-			if (S.Name == 'SkeletalMeshActor_0')
-			{
-				SetObjectVar('SkinSkyrangerInt', S);
-				PreviewSkyrangerInterior = S;
-			}
-			else if (S.Name == 'SkeletalMeshActor_8')
-			{
-				SetObjectVar('SkinSkyrangerExt', S);
-				PreviewSkyrangerHull = S;
-			}
-		}
-	}
-}
-
-function SetObjectVar(name N, Object O)
-{
-	local WorldInfo WI;
-	local array<SequenceVariable> OutVariables;
-	local SequenceVariable SeqVar;
-	local SeqVar_Object SeqVarObj;
-
-	WI = class'WorldInfo'.static.GetWorldInfo();
-
-	WI.MyKismetVariableMgr.GetVariable(N, OutVariables);
-	foreach OutVariables(SeqVar)
-	{
-		SeqVarObj = SeqVar_Object(SeqVar);
-		if(SeqVarObj != none)
-		{
-			SeqVarObj.SetObjectValue(O);
-		}
-	}
-}
-
-// Turn off annoying lights
-function SetLightsActive(bool ShouldEnable)
-{
-	local WorldInfo WI;
-	local Light L;
-	WI = class'WorldInfo'.static.GetWorldInfo();
-
-	foreach WI.AllActors(class'Light', L)
-	{
-		if ((PointLightMovable(L) != none || SpotLightMovable(L) != none) && InStr(PathName(L), "CIN_PostMission1", false, true) != INDEX_NONE)
-		{
-			L.LightComponent.SetEnabled(ShouldEnable);
-		}
-	}
-}
-
 defaultproperties
 {
-	Package="/ package/gfxArmory/Armory"
-	LibID="LoadoutScreenMC"
 	InputState=eInputState_Evaluate
 	bAnimateOnInit=true
 	bConsumeMouseEvents=true

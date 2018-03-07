@@ -20,7 +20,13 @@
     <Content Include="Config\XComSkyrangerSkins.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\3DUIBP_SkyrangerCustomization.umap">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\CIN_SkyrangerCustomization.umap">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\SkyrangerSkinsMod.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\WotC_SkyrangerSkins.int">
@@ -35,10 +41,19 @@
     <Content Include="Src\WotC_SkyrangerSkins\Classes\Helpers_SkyrangerSkins.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\ISkyrangerCustomizeSelector.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UIColorSelectorWithInterface.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\WotC_SkyrangerSkins\Classes\UICustomizeSkyranger.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\WotC_SkyrangerSkins\Classes\UICustomizeSkyrangerItem.uc">
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UICustomizeSkyranger_Main.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\UIListSelector.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\WotC_SkyrangerSkins\Classes\UISL_AvengerHUD_SkyrangerSkins.uc">
@@ -51,6 +66,9 @@
     <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomization.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomizationFilter.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomizationTemplate.uc">
       <SubType>Content</SubType>
     </Content>
@@ -60,10 +78,10 @@
     <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerCustomization_DefaultCustomizationOptions.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\WotC_SkyrangerSkins\Classes\X2SkyrangerMaterialsTemplate.uc">
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\XComGameState_SkyrangerOptions.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\WotC_SkyrangerSkins\Classes\XComGameState_SkyrangerOptions.uc">
+    <Content Include="Src\WotC_SkyrangerSkins\Classes\XComSkyrangerCustomization.uc">
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
