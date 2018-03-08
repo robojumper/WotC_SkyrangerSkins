@@ -15,6 +15,8 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	Customization = new class'XComSkyrangerCustomization';
 	Customization.Init();
 	super.InitScreen(InitController, InitMovie, InitName);
+	`log("Title:" @ class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger);
+	SetTitle(class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger);
 
 }
 
@@ -42,6 +44,8 @@ simulated function UpdateData()
 	Customization.SkyrangerState.ValidateAppearance();
 	Customization.PreviewVisuals();
 
+	i = 0;
+
 	// Material. Show only if more than one material available
 	if (Customization.HasMaterialOptions())
 	{
@@ -61,8 +65,10 @@ simulated function UpdateData()
 			class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.SecondaryColor), OnCustomizeSecondaryColor);
 	}
 
+	`log(Customization.SkyrangerState.GetMaterialsTemplate().DataName @ "allows pattern?" @ Customization.SkyrangerState.GetMaterialsTemplate().AllowPattern);
 	if (Customization.SkyrangerState.GetMaterialsTemplate().AllowPattern && Customization.HasPatternOptions())
 	{
+		`log("Added Patterns option");
 		GetListItem(i++).UpdateDataValue("Pattern",
 			Customization.SkyrangerState.GetPatternTemplate().DisplayName, OnCustomizePattern);
 	}
@@ -88,7 +94,32 @@ simulated function UpdateData()
 
 simulated function OnCustomizeMaterials()
 {
+	local array<X2SkyrangerCustomizationTemplate> Materials;
+	local array<name> MaterialNames;
+	local array<string> MaterialStrings;
+	local int i;
 	
+	class'X2SkyrangerCustomizationTemplateManager'.static.GetSkyrangerCustomizationTemplateManager().GetFilteredTemplates('Material', none, Materials);
+
+	for (i = 0; i < Materials.Length; i++)
+	{
+		MaterialNames.AddItem(Materials[i].DataName);
+		MaterialStrings.AddItem(Materials[i].DisplayName);
+	}
+
+	GetSelector(class'UIListSelector', MaterialStrings, PreviewMaterial, SetMaterial, MaterialNames.Find(Customization.SkyrangerState.MaterialsName), MaterialNames);
+}
+
+simulated function SetMaterial(int idx)
+{
+	Customization.SkyrangerState.MaterialsName = UIListSelector(Selector).GetNames()[idx];
+	UpdateData();
+}
+
+simulated function PreviewMaterial(int idx)
+{
+	Customization.SkyrangerState.MaterialsName = UIListSelector(Selector).GetNames()[idx];
+	Customization.PreviewVisuals();
 }
 
 simulated function OnCustomizePrimaryColor()
@@ -134,15 +165,14 @@ simulated function OnCustomizePattern()
 	local int i;
 	
 	class'X2BodyPartTemplateManager'.static.GetBodyPartTemplateManager().GetUberTemplates("Patterns", Patterns);
-	
+
 	for (i = 0; i < Patterns.Length; i++)
 	{
 		PatternNames.AddItem(Patterns[i].DataName);
 		PatternStrings.AddItem(Patterns[i].DisplayName);
 	}
 
-	GetSelector(class'UIListSelector', PatternStrings, PreviewPattern, SetPattern, PatternNames.Find(Customization.SkyrangerState.PatternName));
-	UIListSelector(Selector).SetNames(PatternNames);
+	GetSelector(class'UIListSelector', PatternStrings, PreviewPattern, SetPattern, PatternNames.Find(Customization.SkyrangerState.PatternName), PatternNames);
 }
 
 simulated function SetPattern(int idx)
@@ -172,8 +202,7 @@ simulated function OnCustomizeDecal()
 		DecalStrings.AddItem(Decals[i].DisplayName);
 	}
 
-	GetSelector(class'UIListSelector', DecalStrings, PreviewDecal, SetDecal, DecalNames.Find(Customization.SkyrangerState.DecalName));
-	UIListSelector(Selector).SetNames(DecalNames);
+	GetSelector(class'UIListSelector', DecalStrings, PreviewDecal, SetDecal, DecalNames.Find(Customization.SkyrangerState.DecalName), DecalNames);
 }
 
 simulated function SetDecal(int idx)

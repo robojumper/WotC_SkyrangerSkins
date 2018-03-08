@@ -29,6 +29,9 @@
     <Content Include="Content\SkyrangerSkinsMod.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\SkyrangerSkins_Addendum.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\WotC_SkyrangerSkins.int">
       <SubType>Content</SubType>
     </Content>

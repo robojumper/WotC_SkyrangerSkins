@@ -1,5 +1,6 @@
 class XComGameState_SkyrangerOptions extends XComGameState_BaseObject;
 
+// Helper macro to create a MIC, set another Material as its parent, and add it to a list of materials
 `define MAKE_MIC(VarName, Path, Arrname) `VarName = new class'MaterialInstanceConstant'; `VarName.SetParent(MaterialInterface(`CONTENT.RequestGameArchetype(`Path))); `ArrName.AddItem(`VarName);
 
 var name MaterialsName;

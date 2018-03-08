@@ -15,11 +15,17 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	ListBG = Spawn(class'UIBGBox', self);
 	ListBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
 	ListBG.InitBG('', 100, 100, 585, 800);
+
+	Header = Spawn(class'UIX2PanelHeader', self).InitPanelHeader();
+	Header.SetPosition(110, 110);
+	Header.SetHeaderWidth(550);
+	Header.Hide();
+
 	List = Spawn(class'UIList', self);
-	List.InitList('', 123, 150, 538, 740);
+	List.InitList('', 123, 170, 538, 740);
 	List.ItemPadding = 5;
 	List.bStickyHighlight = false;
-	List.width = 538;
+	List.width = 550;
 	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 
 	UpdateNavHelp();
@@ -33,7 +39,8 @@ function ResetMechaListItems()
 
 	for (i = 0; i < List.ItemCount; i++)
 	{
-		CustomizeItem = GetListItem(i++);
+		// CustomizeItem = GetListItem(i++); // FIRAAAAAAAAXIS
+		CustomizeItem = GetListItem(i);
 		CustomizeItem.SetDisabled(false);
 		CustomizeItem.OnLoseFocus();
 		CustomizeItem.Hide();
@@ -45,7 +52,18 @@ function ResetMechaListItems()
 
 simulated function SetTitle(string str)
 {
-	// TODO
+	if (str == "")
+	{
+		Header.Hide();
+	}
+	else
+	{
+		Header.Show();
+	}
+	Header.SetText(str);
+	// HAX: Force flash to send an update command
+	Header.headerWidth = 0;
+	Header.SetWidth(550);
 }
 
 simulated function UpdateData()
@@ -82,14 +100,19 @@ simulated function UIMechaListItem GetListItem(int ItemIndex, optional bool bDis
 simulated function ISkyrangerCustomizeSelector GetSelector(class<Actor> SelectorClass, optional array<string> Options,
 													optional delegate<Helpers_SkyrangerSkins.SelectorOnPreviewDelegate> PreviewDelegate,
 													optional delegate<Helpers_SkyrangerSkins.SelectorOnSetDelegate> SetDelegate,
-													optional int Selection = 0)
+													optional int Selection = 0,
+													optional array<name> InitNames)
 {
 	if(Selector == none)
 	{
 		List.Hide();
 		Selector = ISkyrangerCustomizeSelector(Spawn(SelectorClass, self));
+		if (UIListSelector(Selector) != none)
+		{
+			UIListSelector(Selector).SetNames(InitNames);
+		}
 
-		Selector.InitSelector(, 100, 125, 584, 775, Options, PreviewDelegate, SetDelegate, Selection);
+		Selector.InitSelector(, 100, 150, 584, 760, Options, PreviewDelegate, SetDelegate, Selection);
 		UIPanel(Selector).SetSelectedNavigation();
 		ListBG.ProcessMouseEvents(Selector.OnChildMouseEvent);
 	}

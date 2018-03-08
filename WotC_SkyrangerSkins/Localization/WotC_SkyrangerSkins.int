@@ -1,12 +1,11 @@
 [Helpers_SkyrangerSkins]
 strCustomizeSkyranger="Customize Skyranger"
 
-[DefaultSkin X2SkyrangerMaterialsTemplate]
+[Material_Default X2SkyrangerCustomizationTemplate]
 DisplayName="Default"
 
-[Codex X2SkyrangerMaterialsTemplate]
-DisplayName="Codex"
-
+[Material_RetroWave X2SkyrangerCustomizationTemplate]
+DisplayName="Retro Wave"
 
 [Decal_Default X2SkyrangerCustomizationTemplate]
 DisplayName="None"
