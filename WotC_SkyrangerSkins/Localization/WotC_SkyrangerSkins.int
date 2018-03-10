@@ -7,6 +7,10 @@ DisplayName="Default"
 [Material_RetroWave X2SkyrangerCustomizationTemplate]
 DisplayName="Retro Wave"
 
+[Material_Wornout X2SkyrangerCustomizationTemplate]
+DisplayName="Wornout"
+
+
 [Decal_Default X2SkyrangerCustomizationTemplate]
 DisplayName="None"
 
@@ -15,3 +19,6 @@ DisplayName="Sectoid Skulls"
 
 [Decal_Flames X2SkyrangerCustomizationTemplate]
 DisplayName="Flames"
+
+[Decal_Flames_Worn X2SkyrangerCustomizationTemplate]
+DisplayName="Flames (wornout)"
