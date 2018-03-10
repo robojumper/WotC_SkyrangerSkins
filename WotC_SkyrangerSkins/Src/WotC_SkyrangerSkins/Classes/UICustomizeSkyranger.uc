@@ -203,7 +203,10 @@ simulated function bool CloseSelector(optional bool bCancelSelection)
 	if (Selector != none)
 	{
 		if(bCancelSelection)
+		{
 			Selector.CancelSelection();
+			class'UIUtilities_Sound'.static.PlayCloseSound();
+		}
 
 		UIPanel(Selector).Remove();
 		Selector = none;

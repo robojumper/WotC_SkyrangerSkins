@@ -65,12 +65,16 @@ simulated function UpdateData()
 			class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.SecondaryColor), OnCustomizeSecondaryColor);
 	}
 
-	`log(Customization.SkyrangerState.GetMaterialsTemplate().DataName @ "allows pattern?" @ Customization.SkyrangerState.GetMaterialsTemplate().AllowPattern);
 	if (Customization.SkyrangerState.GetMaterialsTemplate().AllowPattern && Customization.HasPatternOptions())
 	{
-		`log("Added Patterns option");
 		GetListItem(i++).UpdateDataValue("Pattern",
 			Customization.SkyrangerState.GetPatternTemplate().DisplayName, OnCustomizePattern);
+		// Since the default pattern is not tintable, we only show this if we have at least one more pattern
+		if (Customization.SkyrangerState.PatternName != 'Pat_Nothing')
+		{
+			GetListItem(i++).UpdateDataColorChip("Pattern Color",
+				class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.PatternColor), OnCustomizePatternColor);
+		}
 	}
 
 	if (Customization.SkyrangerState.GetMaterialsTemplate().AllowDecal)
@@ -186,6 +190,24 @@ simulated function PreviewPattern(int idx)
 	Customization.SkyrangerState.PatternName = UIListSelector(Selector).GetNames()[idx];
 	Customization.PreviewVisuals();
 }
+
+simulated function OnCustomizePatternColor()
+{
+	GetSelector(class'UIColorSelectorWithInterface', class'Helpers_SkyrangerSkins'.static.GetFlashColorList(), PreviewPatternColor, SetPatternColor, Customization.SkyrangerState.PatternColor + 1);
+}
+
+simulated function SetPatternColor(int idx)
+{
+	Customization.SkyrangerState.PatternColor = idx - 1;
+	UpdateData();
+}
+
+simulated function PreviewPatternColor(int idx)
+{
+	Customization.SkyrangerState.PatternColor = idx - 1;
+	Customization.PreviewVisuals();
+}
+
 
 simulated function OnCustomizeDecal()
 {

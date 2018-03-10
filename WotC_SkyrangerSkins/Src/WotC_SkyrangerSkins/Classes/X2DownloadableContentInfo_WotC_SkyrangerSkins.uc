@@ -51,3 +51,8 @@ exec function ApplyToAll()
 {
 	class'XComGameState_SkyrangerOptions'.static.ApplyToAll();
 }
+
+exec function ShowSkyrangerCustomization()
+{
+	`HQPRES.ScreenStack.Push( `HQPRES.Spawn(class'UICustomizeSkyranger_Main', `HQPRES), `HQPRES.Get3DMovie());
+}

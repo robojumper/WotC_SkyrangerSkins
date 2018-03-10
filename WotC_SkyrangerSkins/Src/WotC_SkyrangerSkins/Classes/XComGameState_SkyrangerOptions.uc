@@ -7,6 +7,7 @@ var name MaterialsName;
 var int PrimaryColor, SecondaryColor; // Index into the Armor color palette. If -1, tinting will be disabled
 var name PatternName, DecalName;
 var int DecalColor;
+var int PatternColor;
 
 event OnCreation( optional X2DataTemplate InitTemplate )
 {
@@ -20,6 +21,8 @@ function ValidateAppearance()
 	{
 		PrimaryColor = -1;
 		SecondaryColor = -1;
+		DecalColor = -1;
+		PatternColor = -1;
 		MaterialsName = 'Material_Default';
 	}
 
@@ -30,9 +33,15 @@ function ValidateAppearance()
 		SecondaryColor = -1;
 
 	if (!GetSpecificTemplate(MaterialsName).AllowPattern)
+	{
 		PatternName = '';
+		PatternColor = -1;
+	}
 	else if (GetPatternTemplate() == none)
+	{
 		PatternName = 'Pat_Nothing';
+		PatternColor = -1;
+	}
 
 	if (!GetSpecificTemplate(MaterialsName).AllowDecal)
 		DecalName = '';
@@ -98,8 +107,10 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 			Materials[i].SetVectorParameterValue('Decal Color', DumbColor);
 		}
 
-		Materials[i].SetScalarParameterValue('DecalUse', (DecalTemplate != none && DecalTemplate.TexturePath != "") ? 1 : 0);
-		if (DecalTemplate != none)
+		// Important hackery for decals: Since decals can only ever be used for the Hull (and there's no Decal Mask or anything)
+		// we need to make sure we only ever enable decals for the Hull. Otherwise it will look very very bad.
+		Materials[i].SetScalarParameterValue('DecalUse', (Materials[i] == Mat_Hull && DecalTemplate != none && DecalTemplate.TexturePath != "") ? 1 : 0);
+		if (Materials[i] == Mat_Hull && DecalTemplate != none)
 		{
 			Materials[i].SetScalarParameterValue('DecalForceAlpha', (DecalTemplate.ForceAlpha) ? 1 : 0);
 			if (DecalTemplate.TexturePath != "")
@@ -109,9 +120,15 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 		}
 		PatCont = (Pattern != none && Pattern.ArchetypeName != "") ? XComPatternsContent(`CONTENT.RequestGameArchetype(Pattern.ArchetypeName)) : none;
 		Materials[i].SetScalarParameterValue('PatternUse', (PatCont != none && PatCont.Texture != none) ? 1 : 0);
+		Materials[i].SetScalarParameterValue('Use Pattern Color', (PatCont != none && PatCont.Texture != none && PatternColor > -1) ? 1 : 0);
 		if (Pattern != none && PatCont.Texture != none)
 		{
 			Materials[i].SetTextureParameterValue('Pattern', PatCont.Texture);
+			if (PatternColor > -1)
+			{
+				DumbColor = Palette.Entries[PatternColor].Primary;
+				Materials[i].SetVectorParameterValue('Pattern Color', DumbColor);
+			}
 		}
 	}
 
