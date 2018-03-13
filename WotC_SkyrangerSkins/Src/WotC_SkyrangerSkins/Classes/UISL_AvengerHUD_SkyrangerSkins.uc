@@ -4,8 +4,8 @@ event OnInit(UIScreen Screen)
 {
     local UIAvengerShortcuts Shortcuts;
 	local UIAvengerShortcutMessage Message;
-	// TODO: Change version requirement?
-	if (UIAvengerHUD(Screen) != none && class'Helpers_SkyrangerSkins'.static.IsCHHLMinVersionInstalled(1, 9))
+
+	if (UIAvengerHUD(Screen) != none && ArrayProperty'XComGame.UIAvengerShortcuts.ModSubMenus' != none)
 	{
 		// Make use of the Highlander functionality that allows us to insert list items
 		Shortcuts = `HQPRES.m_kAvengerHUD.Shortcuts;
@@ -17,9 +17,8 @@ event OnInit(UIScreen Screen)
 		Message.bDisabled = false;
 		Shortcuts.ModSubMenus[eUIAvengerShortcutCat_Barracks].SubMenuItems.Add(1);
 		Shortcuts.ModSubMenus[eUIAvengerShortcutCat_Barracks].SubMenuItems[Shortcuts.ModSubMenus[eUIAvengerShortcutCat_Barracks].SubMenuItems.Length - 1].Message = Message;
-
 	}
-	else if (UIFacility_Armory(Screen) != none && !class'Helpers_SkyrangerSkins'.static.IsCHHLMinVersionInstalled(1, 8))
+	else if (UIFacility_Armory(Screen) != none && ArrayProperty'XComGame.UIAvengerShortcuts.ModSubMenus' == none)
 	{
 		// Random ugly button until highlander updated
 		Screen.Spawn(class'UIButton', Screen).InitButton('', class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger, OnButtonClicked).SetPosition(130, 30);

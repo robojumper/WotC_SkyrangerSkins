@@ -29,6 +29,15 @@ static event InstallNewCampaign(XComGameState StartState)
 }
 
 
+/// <summary>
+/// Called after the player exits the post-mission sequence while this DLC / Mod is installed.
+/// </summary>
+static event OnExitPostMissionSequence()
+{
+	// Reset our post mission map to make sure it plays nice.
+	`GAME.GetGeoscape().m_kBase.SetTimer(1.0f, false, 'ResetPostMissionMap', `GAME.GetGeoscape().m_kBase);
+}
+
 // Helper console command that writes the current camera settings to the log file
 exec function LogCameraTPOV()
 {
@@ -55,4 +64,9 @@ exec function ApplyToAll()
 exec function ShowSkyrangerCustomization()
 {
 	`HQPRES.ScreenStack.Push( `HQPRES.Spawn(class'UICustomizeSkyranger_Main', `HQPRES), `HQPRES.Get3DMovie());
+}
+
+exec function ResetPostMissionMap()
+{
+	OnExitPostMissionSequence();
 }
