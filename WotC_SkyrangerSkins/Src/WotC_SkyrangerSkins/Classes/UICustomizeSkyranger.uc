@@ -90,6 +90,7 @@ simulated function UIMechaListItem GetListItem(int ItemIndex, optional bool bDis
 	{
 		Item = List.GetItem(ItemIndex);
 		CustomizeItem = UIMechaListItem(Item);
+		CustomizeItem.EnableNavigation();
 	}
 
 	CustomizeItem.SetDisabled(bDisableItem, DisabledReason);
@@ -113,7 +114,6 @@ simulated function ISkyrangerCustomizeSelector GetSelector(class<Actor> Selector
 		}
 
 		Selector.InitSelector(, 100, 150, 584, 760, Options, PreviewDelegate, SetDelegate, Selection);
-		UIPanel(Selector).SetSelectedNavigation();
 		ListBG.ProcessMouseEvents(Selector.OnChildMouseEvent);
 	}
 	return Selector;
@@ -161,16 +161,21 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	if (Selector != none && Selector.OnUnrealCommand(cmd, arg))
 		return true;
 
+	if (List != none && List.OnUnrealCommand(cmd, arg))
+	{
+		if ((cmd == class'UIUtilities_Input'.const.FXS_KEY_ENTER ||
+		     cmd == class'UIUtilities_Input'.const.FXS_BUTTON_A ||
+		     cmd == class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR))
+		{
+			Movie.Pres.PlayUISound(eSUISound_MenuSelect);
+		}
+		return true;
+	}
 
 	bHandled = true;
 
 	switch( cmd )
 	{
-		case class'UIUtilities_Input'.const.FXS_BUTTON_A:
-		case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
-		case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
-			OnAccept();
-			break;
 		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
 		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
 		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
@@ -184,7 +189,6 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
 
-simulated function OnAccept();
 simulated function OnCancel()
 {
 	CloseScreen();
@@ -213,7 +217,7 @@ simulated function bool CloseSelector(optional bool bCancelSelection)
 
 		ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 		List.Show();
-		List.SetSelectedNavigation();
+		//List.SetSelectedNavigation();
 		return true;
 	}
 	return false;

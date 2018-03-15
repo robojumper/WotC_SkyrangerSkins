@@ -103,6 +103,30 @@ simulated function OnCancel()
 		OnSetDelegate( InitialSelection );
 }
 
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	local bool bHandled;
+
+	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
+		return false;
+
+		bHandled = true;
+
+	switch( cmd )
+	{
+		case class'UIUtilities_Input'.const.FXS_BUTTON_A:
+		case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
+		case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
+			OnAccept(TheList, TheList.SelectedIndex);
+			break;
+		default:
+			bHandled = false;
+			break;
+	}
+
+	return bHandled || TheList.OnUnrealCommand(cmd, arg);
+}
+
 defaultproperties
 {
 	bIsNavigable = true;

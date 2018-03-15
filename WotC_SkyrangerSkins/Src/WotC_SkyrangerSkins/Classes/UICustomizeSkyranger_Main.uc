@@ -36,7 +36,9 @@ simulated function OnInit()
 
 simulated function UpdateData()
 {
-	local int i;
+	local int i, prevIndex;
+
+	prevIndex = List.SelectedIndex;
 
 	ResetMechaListItems();
 	super.UpdateData();
@@ -90,6 +92,7 @@ simulated function UpdateData()
 				class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.DecalColor), OnCustomizeDecalColor);
 		}
 	}
+	List.SetSelectedIndex(prevIndex < List.ItemCount ? prevIndex : 0);
 }
 
 
