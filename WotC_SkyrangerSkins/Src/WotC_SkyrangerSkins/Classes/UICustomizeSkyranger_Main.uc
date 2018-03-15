@@ -41,7 +41,6 @@ simulated function UpdateData()
 	ResetMechaListItems();
 	super.UpdateData();
 
-	Customization.SkyrangerState.ValidateAppearance();
 	Customization.PreviewVisuals();
 
 	i = 0;

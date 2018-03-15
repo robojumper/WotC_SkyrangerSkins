@@ -17,42 +17,25 @@ event OnCreation( optional X2DataTemplate InitTemplate )
 // Hardcoded defaults here
 function ValidateAppearance()
 {
-	if (GetSpecificTemplate(MaterialsName) == none)
+	if (GetMaterialsTemplate() == none)
 	{
-		PrimaryColor = -1;
-		SecondaryColor = -1;
-		DecalColor = -1;
-		PatternColor = -1;
 		MaterialsName = 'Material_Default';
-	}
-
-	if (!GetSpecificTemplate(MaterialsName).AllowMaterialPrimaryTinting)
 		PrimaryColor = -1;
-
-	if (!GetSpecificTemplate(MaterialsName).AllowMaterialSecondaryTinting)
 		SecondaryColor = -1;
-
-	if (!GetSpecificTemplate(MaterialsName).AllowPattern)
-	{
-		PatternName = '';
-		PatternColor = -1;
 	}
-	else if (GetPatternTemplate() == none)
+
+	if (GetPatternTemplate() == none)
 	{
 		PatternName = 'Pat_Nothing';
 		PatternColor = -1;
 	}
 
-	if (!GetSpecificTemplate(MaterialsName).AllowDecal)
-		DecalName = '';
-	else if (GetDecalTemplate() == none)
+	if (GetDecalTemplate() == none)
+	{
 		DecalName = 'Decal_Default';
-
-	if (GetSpecificTemplate(DecalName) == none || !GetSpecificTemplate(DecalName).AllowDecalTinting)
 		DecalColor = -1;
+	}
 }
-
-
 
 
 function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Interiors)
@@ -66,10 +49,11 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 	local XComLinearColorPalette Palette;
 	local LinearColor DumbColor;
 	local int i;
+	local bool TempSetting;
 
-	Mat = GetSpecificTemplate(MaterialsName);
-	DecalTemplate = GetSpecificTemplate(DecalName);
-	Pattern = GetPatternTemplate();
+	Mat = GetMaterialsTemplate();
+	DecalTemplate = Mat.AllowDecal ? GetDecalTemplate() : none;
+	Pattern = Mat.AllowPattern ? GetPatternTemplate() : none;
 	Palette = `CONTENT.GetColorPalette(ePalette_ArmorTint);
 	
 
@@ -86,22 +70,25 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 
 	for (i = 0; i < Materials.Length; i++)
 	{
-		Materials[i].SetScalarParameterValue('Use Tint', (PrimaryColor > -1) ? 1 : 0);
-		if (PrimaryColor > -1)
+		TempSetting = Mat.AllowMaterialPrimaryTinting && PrimaryColor > -1;
+		Materials[i].SetScalarParameterValue('Use Tint', TempSetting ? 1 : 0);
+		if (TempSetting)
 		{
 			DumbColor = Palette.Entries[PrimaryColor].Primary;
 			Materials[i].SetVectorParameterValue('Primary Color', DumbColor);
 		}
 
-		Materials[i].SetScalarParameterValue('Use Secondary Tint', (SecondaryColor > -1) ? 1 : 0);
-		if (SecondaryColor > -1)
+		TempSetting = Mat.AllowMaterialSecondaryTinting && SecondaryColor > -1;
+		Materials[i].SetScalarParameterValue('Use Secondary Tint', TempSetting ? 1 : 0);
+		if (TempSetting)
 		{
 			DumbColor = Palette.Entries[SecondaryColor].Primary;
 			Materials[i].SetVectorParameterValue('Secondary Color', DumbColor);
 		}
 		
-		Materials[i].SetScalarParameterValue('DecalTintable', (DecalColor > -1) ? 1 : 0);
-		if (DecalColor > -1)
+		TempSetting = DecalTemplate.AllowDecalTinting && DecalColor > -1;
+		Materials[i].SetScalarParameterValue('DecalTintable', TempSetting ? 1 : 0);
+		if (TempSetting)
 		{
 			DumbColor = Palette.Entries[DecalColor].Primary;
 			Materials[i].SetVectorParameterValue('Decal Color', DumbColor);
@@ -109,8 +96,9 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 
 		// Important hackery for decals: Since decals can only ever be used for the Hull (and there's no Decal Mask or anything)
 		// we need to make sure we only ever enable decals for the Hull. Otherwise it will look very very bad.
-		Materials[i].SetScalarParameterValue('DecalUse', (Materials[i] == Mat_Hull && DecalTemplate != none && DecalTemplate.TexturePath != "") ? 1 : 0);
-		if (Materials[i] == Mat_Hull && DecalTemplate != none)
+		TempSetting = Materials[i] == Mat_Hull && DecalTemplate != none;
+		Materials[i].SetScalarParameterValue('DecalUse', (TempSetting && DecalTemplate.TexturePath != "") ? 1 : 0);
+		if (TempSetting)
 		{
 			Materials[i].SetScalarParameterValue('DecalForceAlpha', (DecalTemplate.ForceAlpha) ? 1 : 0);
 			if (DecalTemplate.TexturePath != "")
