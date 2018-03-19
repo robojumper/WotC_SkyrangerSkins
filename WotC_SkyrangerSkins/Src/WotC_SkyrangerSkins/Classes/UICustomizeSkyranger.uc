@@ -32,11 +32,15 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	UpdateData();
 }
 
+// MechaListItems really can't seem to be able to deal with being re-enabled as a different kind
+// of item. Hence, just clear the list. It just doesn't work.
 function ResetMechaListItems()
 {
-	local UIMechaListItem CustomizeItem;
-	local int i;
+	// local UIMechaListItem CustomizeItem;
+	// local int i;
 
+	List.ClearItems();
+/*
 	for (i = 0; i < List.ItemCount; i++)
 	{
 		// CustomizeItem = GetListItem(i++); // FIRAAAAAAAAXIS
@@ -47,6 +51,7 @@ function ResetMechaListItems()
 		CustomizeItem.BG.RemoveTooltip();
 		CustomizeItem.DisableNavigation();
 	}
+*/
 	List.SetSelectedIndex(-1);
 }
 
