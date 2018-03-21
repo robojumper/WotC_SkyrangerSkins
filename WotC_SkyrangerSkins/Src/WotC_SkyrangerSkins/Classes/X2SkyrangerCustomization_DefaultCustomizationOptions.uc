@@ -25,6 +25,8 @@ struct SkyrangerCustomizationConfig
 	var string TexturePath;
 	var bool AllowDecalTinting;
 	var bool ForceAlpha;
+	var bool ForceTint;
+	var LinearColor DefaultTint;
 };
 
 
@@ -65,6 +67,8 @@ static function array<X2DataTemplate> CreateTemplates()
 		Template.TexturePath = Cnf.TexturePath;
 		Template.AllowDecalTinting = Cnf.AllowDecalTinting;
 		Template.ForceAlpha = Cnf.ForceAlpha;
+		Template.ForceTint = Cnf.ForceTint;
+		Template.DefaultTint = Cnf.DefaultTint;
 
 		Templates.AddItem(Template);
 	}

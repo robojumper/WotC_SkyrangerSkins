@@ -15,7 +15,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	Customization = new class'XComSkyrangerCustomization';
 	Customization.Init();
 	super.InitScreen(InitController, InitMovie, InitName);
-	`log("Title:" @ class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger);
 	SetTitle(class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger);
 
 }
@@ -27,7 +26,6 @@ simulated function OnInit()
 	InitKismet();
 	`XCOMGRI.DoRemoteEvent('CIN_StartSkyrangerCustomization');
 	ScreenState = eSCSS_Starting;
-	`log("Set State to starting");
 }
 
 
@@ -37,6 +35,7 @@ simulated function OnInit()
 simulated function UpdateData()
 {
 	local int i, prevIndex;
+	local string decalColor;
 
 	prevIndex = List.SelectedIndex;
 
@@ -88,8 +87,15 @@ simulated function UpdateData()
 
 		if (Customization.SkyrangerState.GetDecalTemplate().AllowDecalTinting)
 		{
-			GetListItem(i++).UpdateDataColorChip("Decal Color",
-				class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.DecalColor), OnCustomizeDecalColor);
+			if (Customization.SkyrangerState.DecalColor == -1 && Customization.SkyrangerState.GetDecalTemplate().ForceTint)
+			{
+				decalColor = class'UIUtilities_Colors'.static.LinearColorToFlashHex(Customization.SkyrangerState.GetDecalTemplate().DefaultTint, class'XComCharacterCustomization'.default.UIColorBrightnessAdjust);
+			}
+			else
+			{
+				decalColor = class'Helpers_SkyrangerSkins'.static.GetDisplayColorHTML(Customization.SkyrangerState.DecalColor);
+			}
+			GetListItem(i++).UpdateDataColorChip("Decal Color", decalColor, OnCustomizeDecalColor);
 		}
 	}
 	List.SetSelectedIndex(prevIndex < List.ItemCount ? prevIndex : 0);
@@ -243,7 +249,12 @@ simulated function PreviewDecal(int idx)
 
 simulated function OnCustomizeDecalColor()
 {
-	GetSelector(class'UIColorSelectorWithInterface', class'Helpers_SkyrangerSkins'.static.GetFlashColorList(), PreviewDecalColor, SetDecalColor, Customization.SkyrangerState.DecalColor + 1);
+	local string noneColorOverride;
+	if (Customization.SkyrangerState.GetDecalTemplate().ForceTint)
+	{
+		noneColorOverride = class'UIUtilities_Colors'.static.LinearColorToFlashHex(Customization.SkyrangerState.GetDecalTemplate().DefaultTint, class'XComCharacterCustomization'.default.UIColorBrightnessAdjust);
+	}
+	GetSelector(class'UIColorSelectorWithInterface', class'Helpers_SkyrangerSkins'.static.GetFlashColorList(noneColorOverride), PreviewDecalColor, SetDecalColor, Customization.SkyrangerState.DecalColor + 1);
 }
 
 simulated function SetDecalColor(int idx)
@@ -266,7 +277,6 @@ event OnRemoteEvent(name RemoteEventName)
 	super.OnRemoteEvent(RemoteEventName);
 	if (RemoteEventName == 'CIN_SkyrangerFadedOut')
 	{
-		`log("Faded out triggered");
 		OnFadeOutTriggered();
 	}
 }
@@ -280,7 +290,6 @@ function OnFadeOutTriggered()
 		SetLightsActive(false);
 		class'UIUtilities'.static.DisplayUI3D('3DUIBP_SkyrangerCustomization', '3DUIBP_SkyrangerCustomization', 0);
 		ScreenState = eSCSS_Running;
-		`log("Set State to Running");
 	}
 	else if (ScreenState == eSCSS_Ending)
 	{
@@ -296,7 +305,6 @@ simulated function CloseScreen()
 	{
 		`XCOMGRI.DoRemoteEvent('CIN_EndSkyrangerCustomization');
 		ScreenState = eSCSS_Ending;
-		`log("Set State to ending");
 	}
 }
 

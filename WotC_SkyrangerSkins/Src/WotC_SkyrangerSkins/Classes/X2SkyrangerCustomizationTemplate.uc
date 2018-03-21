@@ -24,5 +24,7 @@ var bool AllowDecal;
 var string TexturePath;
 var bool AllowDecalTinting;
 var bool ForceAlpha;
+var bool ForceTint;
+var LinearColor DefaultTint;
 
 // Options that don't need a template: Pattern (XComPatternsContent in X2BodyPart...), Colors

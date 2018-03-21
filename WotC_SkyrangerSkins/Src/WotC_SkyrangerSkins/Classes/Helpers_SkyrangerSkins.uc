@@ -79,9 +79,9 @@ static function FindMeshes(out array<MeshComponent> Exts, out array<MeshComponen
 
 }
 
-// COLORS: There is an implicit 000000 at index 0 to 
+// COLORS: There is an implicit 000000 at index 0... or whatever we pass here
 
-static function array<string> GetFlashColorList()
+static function array<string> GetFlashColorList(optional string noneColor = "0x000000")
 {
 	local XComLinearColorPalette Palette;
 	local array<string> Colors; 
@@ -92,11 +92,11 @@ static function array<string> GetFlashColorList()
 	{
 		Colors.AddItem(class'UIUtilities_Colors'.static.LinearColorToFlashHex(Palette.Entries[i].Primary, class'XComCharacterCustomization'.default.UIColorBrightnessAdjust));
 	}
-	Colors.InsertItem(0, "0x000000");
+	Colors.InsertItem(0, noneColor);
 	return Colors;
 }
 
-static function string GetDisplayColorHTML(int ColorIndex)
+static function string GetDisplayColorHTML(int ColorIndex, optional string noneColor = "0x000000")
 {
 	local XComLinearColorPalette Palette;
 
@@ -104,11 +104,10 @@ static function string GetDisplayColorHTML(int ColorIndex)
 	
 	if (ColorIndex >= 0 && Palette != none)
 	{
-
 		return class'UIUtilities_Colors'.static.LinearColorToFlashHex(Palette.Entries[ColorIndex].Primary, class'XComCharacterCustomization'.default.UIColorBrightnessAdjust);
 	}
 	else if (ColorIndex == -1)
 	{
-		return "0x000000";
+		return noneColor;
 	}
 }
