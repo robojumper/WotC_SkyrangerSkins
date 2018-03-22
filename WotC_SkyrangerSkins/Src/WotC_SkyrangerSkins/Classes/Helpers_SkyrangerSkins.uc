@@ -1,7 +1,4 @@
-class Helpers_SkyrangerSkins extends Object config(SkyrangerSkins);
-
-var config int iDummy;
-var localized string strCustomizeSkyranger;
+class Helpers_SkyrangerSkins extends Object;
 
 delegate SelectorOnPreviewDelegate(int Idx);
 delegate SelectorOnSetDelegate(int Idx);

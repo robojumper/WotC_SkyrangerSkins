@@ -9,8 +9,8 @@ event OnInit(UIScreen Screen)
 	{
 		// Make use of the Highlander functionality that allows us to insert list items
 		Shortcuts = `HQPRES.m_kAvengerHUD.Shortcuts;
-		Message.Label = class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger;
-		Message.Description = class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger;
+		Message.Label = class'UICustomizeSkyranger_Main'.default.strCustomizeSkyranger;
+		Message.Description = class'UICustomizeSkyranger_Main'.default.strCustomizeSkyranger;
 		//Message.HotLinkRef = none;
 		Message.Urgency = eUIAvengerShortcutMsgUrgency_Low;
 		Message.OnItemClicked = MsgCallback;
@@ -21,7 +21,7 @@ event OnInit(UIScreen Screen)
 	else if (UIFacility_Armory(Screen) != none && ArrayProperty'XComGame.UIAvengerShortcuts.ModSubMenus' == none)
 	{
 		// Random ugly button until highlander updated
-		Screen.Spawn(class'UIButton', Screen).InitButton('', class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger, OnButtonClicked).SetPosition(130, 30);
+		Screen.Spawn(class'UIButton', Screen).InitButton('', class'UICustomizeSkyranger_Main'.default.strCustomizeSkyranger, OnButtonClicked).SetPosition(130, 30);
 	}
 
 	// Also stream in our cinematic map

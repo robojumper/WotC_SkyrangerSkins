@@ -1,5 +1,13 @@
-[Helpers_SkyrangerSkins]
+[UICustomizeSkyranger_Main]
 strCustomizeSkyranger="Customize Skyranger"
+
+m_strMaterials="Material"
+m_strPrimaryColor="Primary Color"
+m_strSecondaryColor="Secondary Color"
+m_strPattern="Pattern"
+m_strPatternColor="Pattern Color"
+m_strDecal="Decal"
+m_strDecalColor="Decal Color"
 
 [Material_Default X2SkyrangerCustomizationTemplate]
 DisplayName="Default"

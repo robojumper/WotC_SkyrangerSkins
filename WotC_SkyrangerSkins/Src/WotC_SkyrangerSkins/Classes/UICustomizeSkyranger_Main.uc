@@ -8,14 +8,22 @@ var enum ESkyrangerCustomizeScreenState
 	eSCSS_Ending,
 } ScreenState;
 
+var localized string m_strMaterials;
+var localized string m_strPrimaryColor;
+var localized string m_strSecondaryColor;
+var localized string m_strPattern;
+var localized string m_strPatternColor;
+var localized string m_strDecal;
+var localized string m_strDecalColor;
 
+var localized string strCustomizeSkyranger;
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
 	Customization = new class'XComSkyrangerCustomization';
 	Customization.Init();
 	super.InitScreen(InitController, InitMovie, InitName);
-	SetTitle(class'Helpers_SkyrangerSkins'.default.strCustomizeSkyranger);
+	SetTitle(strCustomizeSkyranger);
 
 }
 
