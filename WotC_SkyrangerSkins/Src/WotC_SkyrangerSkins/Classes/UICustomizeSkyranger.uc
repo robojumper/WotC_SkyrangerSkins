@@ -201,33 +201,34 @@ simulated function OnCancel()
 
 simulated function CloseScreen()
 {	
-	if (!CloseSelector(true))
+	if (!CancelSelection())
 	{
 		super.CloseScreen();
 	}
 }
 
-simulated function bool CloseSelector(optional bool bCancelSelection)
+simulated function CloseSelector()
 {
 	if (Selector != none)
 	{
-		if(bCancelSelection)
-		{
-			Selector.CancelSelection();
-			class'UIUtilities_Sound'.static.PlayCloseSound();
-		}
-
 		UIPanel(Selector).Remove();
 		Selector = none;
-
 		ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 		List.Show();
 		//List.SetSelectedNavigation();
+	}
+}
+
+simulated function bool CancelSelection()
+{
+	if (Selector != none)
+	{
+		Selector.CancelSelection();
+		class'UIUtilities_Sound'.static.PlayCloseSound();
 		return true;
 	}
 	return false;
 }
-
 
 simulated function UpdateNavHelp()
 {

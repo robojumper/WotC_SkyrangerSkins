@@ -86,7 +86,7 @@ function ApplyToSkyrangers(array<MeshComponent> Hulls, array<MeshComponent> Inte
 			Materials[i].SetVectorParameterValue('Secondary Color', DumbColor);
 		}
 		
-		TempSetting = DecalTemplate.AllowDecalTinting && (DecalColor > -1 || DecalTemplate.ForceTint);
+		TempSetting = DecalTemplate != none && DecalTemplate.AllowDecalTinting && (DecalColor > -1 || DecalTemplate.ForceTint);
 		Materials[i].SetScalarParameterValue('DecalTintable', TempSetting ? 1 : 0);
 		if (TempSetting)
 		{

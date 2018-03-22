@@ -1,5 +1,5 @@
 [UICustomizeSkyranger_Main]
-strCustomizeSkyranger="Customize Skyranger"
+m_strCustomizeSkyranger="Customize Skyranger"
 
 m_strMaterials="Material"
 m_strPrimaryColor="Primary Color"

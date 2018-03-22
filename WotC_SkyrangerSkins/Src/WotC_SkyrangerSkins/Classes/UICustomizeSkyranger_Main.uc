@@ -16,14 +16,14 @@ var localized string m_strPatternColor;
 var localized string m_strDecal;
 var localized string m_strDecalColor;
 
-var localized string strCustomizeSkyranger;
+var localized string m_strCustomizeSkyranger;
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
 	Customization = new class'XComSkyrangerCustomization';
 	Customization.Init();
 	super.InitScreen(InitController, InitMovie, InitName);
-	SetTitle(strCustomizeSkyranger);
+	SetTitle(m_strCustomizeSkyranger);
 
 }
 
@@ -309,7 +309,7 @@ function OnFadeOutTriggered()
 // Delay close screen
 simulated function CloseScreen()
 {
-	if (!CloseSelector(true) && ScreenState == eSCSS_Running)
+	if (!CancelSelection() && ScreenState == eSCSS_Running)
 	{
 		`XCOMGRI.DoRemoteEvent('CIN_EndSkyrangerCustomization');
 		ScreenState = eSCSS_Ending;
