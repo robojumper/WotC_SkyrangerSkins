@@ -27,6 +27,26 @@ function GetFilteredTemplates(name PartType, delegate<X2SkyrangerCustomizationFi
 			arrTemplates.AddItem(X2SkyrangerCustomizationTemplate(Template));
 		}
 	}
+	arrTemplates.Sort(ByDefault);
+}
+
+function int ByDefault(X2SkyrangerCustomizationTemplate A, X2SkyrangerCustomizationTemplate B)
+{
+	return (!A.IsDefault && B.IsDefault) ? -1 : 0;
+}
+
+function X2SkyrangerCustomizationTemplate GetDefaultTemplate(name PartType, delegate<X2SkyrangerCustomizationFilter.FilterCallback> CallbackFn)
+{
+	local X2DataTemplate Template;
+
+	foreach IterateTemplates(Template, none)
+	{
+		if (X2SkyrangerCustomizationTemplate(Template).IsDefault && X2SkyrangerCustomizationTemplate(Template).PartType == PartType && (CallbackFn == none || CallbackFn(X2SkyrangerCustomizationTemplate(Template))))
+		{
+			return X2SkyrangerCustomizationTemplate(Template);
+		}
+	}
+	return none;
 }
 
 DefaultProperties

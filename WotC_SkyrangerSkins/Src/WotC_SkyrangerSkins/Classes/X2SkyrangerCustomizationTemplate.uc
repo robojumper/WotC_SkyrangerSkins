@@ -1,8 +1,11 @@
 class X2SkyrangerCustomizationTemplate extends X2DataTemplate config(SkyrangerSkins);
 
 var localized string DisplayName;
+var string IconPath;
 
 var name PartType;
+
+var bool IsDefault;
 
 // If PartType == 'Material'
 var string Mat_Zero;

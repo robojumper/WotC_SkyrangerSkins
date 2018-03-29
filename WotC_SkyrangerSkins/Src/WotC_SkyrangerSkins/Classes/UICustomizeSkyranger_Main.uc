@@ -124,7 +124,7 @@ simulated function OnCustomizeMaterials()
 	for (i = 0; i < Materials.Length; i++)
 	{
 		MaterialNames.AddItem(Materials[i].DataName);
-		MaterialStrings.AddItem(Materials[i].DisplayName);
+		MaterialStrings.AddItem(FormatDisplayString(Materials[i]));
 	}
 
 	GetSelector(class'UIListSelector', MaterialStrings, PreviewMaterial, SetMaterial, MaterialNames.Find(Customization.SkyrangerState.MaterialsName), MaterialNames);
@@ -237,7 +237,7 @@ simulated function OnCustomizeDecal()
 	for (i = 0; i < Decals.Length; i++)
 	{
 		DecalNames.AddItem(Decals[i].DataName);
-		DecalStrings.AddItem(Decals[i].DisplayName);
+		DecalStrings.AddItem(FormatDisplayString(Decals[i]));
 	}
 
 	GetSelector(class'UIListSelector', DecalStrings, PreviewDecal, SetDecal, DecalNames.Find(Customization.SkyrangerState.DecalName), DecalNames);
@@ -277,7 +277,17 @@ simulated function PreviewDecalColor(int idx)
 	Customization.PreviewVisuals();
 }
 
-
+static function string FormatDisplayString(X2SkyrangerCustomizationTemplate T)
+{
+	local string str;
+	str = "";
+	if (T.IconPath != "")
+	{
+		str $= class'UIUtilities_Text'.static.InjectImage(class'UIUtilities_Image'.static.ValidateImagePath(T.IconPath), 26, 26, -4) $ " ";
+	}
+	str $= T.DisplayName;
+	return str;
+}
 
 
 event OnRemoteEvent(name RemoteEventName)

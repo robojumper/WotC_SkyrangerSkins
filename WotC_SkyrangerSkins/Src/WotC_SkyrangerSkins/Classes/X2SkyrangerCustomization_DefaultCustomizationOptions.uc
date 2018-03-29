@@ -3,7 +3,9 @@ class X2SkyrangerCustomization_DefaultCustomizationOptions extends X2SkyrangerCu
 struct SkyrangerCustomizationConfig
 {
 	var name TemplateName;
+	var string IconPath;
 	var name PartType;
+	var bool IsDefault;
 
 	// If PartType == 'Material'
 	var string Mat_Zero;
@@ -46,6 +48,8 @@ static function array<X2DataTemplate> CreateTemplates()
 	{
 		Template = new (none, string(Cnf.TemplateName)) class'X2SkyrangerCustomizationTemplate'; Template.SetTemplateName(Cnf.TemplateName);
 		Template.PartType = Cnf.PartType;
+		Template.IconPath = Cnf.IconPath;
+		Template.IsDefault = Cnf.IsDefault;
 
 		// If PartType == 'Material'
 		Template.Mat_Zero = Cnf.Mat_Zero;

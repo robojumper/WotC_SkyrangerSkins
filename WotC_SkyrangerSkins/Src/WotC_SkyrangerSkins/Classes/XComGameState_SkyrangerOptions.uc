@@ -19,7 +19,7 @@ function ValidateAppearance()
 {
 	if (GetMaterialsTemplate() == none)
 	{
-		MaterialsName = 'Material_Default';
+		MaterialsName = class'X2SkyrangerCustomizationTemplateManager'.static.GetSkyrangerCustomizationTemplateManager().GetDefaultTemplate('Material', none).DataName;
 		PrimaryColor = -1;
 		SecondaryColor = -1;
 	}
@@ -32,7 +32,7 @@ function ValidateAppearance()
 
 	if (GetDecalTemplate() == none)
 	{
-		DecalName = 'Decal_Default';
+		DecalName = class'X2SkyrangerCustomizationTemplateManager'.static.GetSkyrangerCustomizationTemplateManager().GetDefaultTemplate('Decal', none).DataName;
 		DecalColor = -1;
 	}
 }
