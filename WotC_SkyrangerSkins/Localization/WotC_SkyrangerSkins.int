@@ -10,7 +10,7 @@ m_strDecal="Decal"
 m_strDecalColor="Decal Color"
 
 [Material_Default X2SkyrangerCustomizationTemplate]
-DisplayName="Default"
+DisplayName="Default" 
 
 [Material_RetroWave X2SkyrangerCustomizationTemplate]
 DisplayName="Retro Wave"
@@ -18,15 +18,9 @@ DisplayName="Retro Wave"
 [Material_Wornout X2SkyrangerCustomizationTemplate]
 DisplayName="Wornout"
 
+[Material_Lava X2SkyrangerCustomizationTemplate]
+DisplayName="Lava Lamp" 
+
 
 [Decal_Default X2SkyrangerCustomizationTemplate]
 DisplayName="None"
-
-[Decal_Skulls X2SkyrangerCustomizationTemplate]
-DisplayName="Sectoid Skulls"
-
-[Decal_Flames X2SkyrangerCustomizationTemplate]
-DisplayName="Flames"
-
-[Decal_Flames_Worn X2SkyrangerCustomizationTemplate]
-DisplayName="Flames (wornout)"
